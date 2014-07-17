@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# To update the version shipped in this quickstart, bump this variable:
+#
+install_version="2.8.5"
+
+# Download and install Gerrit
+
+install_file=${OPENSHIFT_DATA_DIR}gerrit-${install_version}.war
+
+# The current version of Gerrit is already installed, nothing else to do...
+[ -f "${install_file}" ] && exit 0
+
+curl -s https://gerrit-releases.storage.googleapis.com/gerrit-${install_version}.war > ${install_file}
+
+ln -sf ${install_file} ${OPENSHIFT_DATA_DIR}gerrit.war

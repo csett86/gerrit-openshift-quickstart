@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# This deploy hook gets executed after dependencies are resolved and the
+# build hook has been run but before the application has been started back
+# up again.  This script gets executed directly, so it could be python, php,
+# ruby, etc.
+
+site_dir="${OPENSHIFT_DATA_DIR}site/"
+config_dir="${site_dir}etc/"
+
+# prepopulate site dir with ssh keys
+if [ ! -d "${site_dir}" ]
+then
+	java -jar ${OPENSHIFT_DATA_DIR}gerrit.war init --batch --no-auto-start -d ${site_dir}
+	# remove the git dir, the UUID of the All-projects.git must match the Administrators
+	# group content in the database
+	rm -rf ${site_dir}git
+fi
+
+# overwrite config with mysql config
+
+if [ -z "$OPENSHIFT_MYSQL_DB_HOST" ]
+then
+    echo 1>&2
+    echo "Could not find mysql database.  Please run:" 1>&2
+    echo "rhc cartridge add -a $OPENSHIFT_APP_NAME -c mysql-5.5" 1>&2
+    echo "then make a sample commit (add whitespace somewhere) and re-push" 1>&2
+    echo 1>&2
+    exit 5
+fi
+
+cat >${config_dir}gerrit.config <<EOF
+[gerrit]
+	basePath = git
+	canonicalWebUrl = https://${OPENSHIFT_APP_DNS}/
+[database]
+	type = mysql
+	database = ${OPENSHIFT_APP_NAME}
+	hostname = ${OPENSHIFT_MYSQL_DB_HOST}
+	port = ${OPENSHIFT_MYSQL_DB_PORT}
+	username = ${OPENSHIFT_MYSQL_DB_USERNAME}
+	password = ${OPENSHIFT_MYSQL_DB_PASSWORD}
+[auth]
+	type = OPENID
+[sendemail]
+	smtpServer = localhost
+[container]
+	user = ${OPENSHIFT_GEAR_UUID}
+	javaHome = $(dirname $(dirname $(readlink -f $(which java))))
+[sshd]
+	listenAddress = off
+[httpd]
+	listenUrl = proxy-https://${OPENSHIFT_DIY_IP}:${OPENSHIFT_DIY_PORT}/
+[cache]
+	directory = cache
+EOF
+
+# rerun init to initialize mysql database
+java -jar ${OPENSHIFT_DATA_DIR}gerrit.war init --batch --no-auto-start -d ${site_dir}
