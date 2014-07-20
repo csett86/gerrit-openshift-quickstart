@@ -46,7 +46,6 @@ cat >${config_dir}gerrit.config <<EOF
 	smtpServer = localhost
 [container]
 	user = ${OPENSHIFT_GEAR_UUID}
-	javaHome = $(dirname $(dirname $(readlink -f $(which java))))
 [sshd]
 	listenAddress = off
 [httpd]
