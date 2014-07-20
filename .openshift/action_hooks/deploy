@@ -18,6 +18,8 @@ then
 fi
 
 # overwrite config with mysql config
+# creating config first and then running init does not work, because the ssh key is not
+# generated if config_dir is present.
 
 if [ -z "$OPENSHIFT_MYSQL_DB_HOST" ]
 then
@@ -46,6 +48,8 @@ cat >${config_dir}gerrit.config <<EOF
 	smtpServer = localhost
 [container]
 	user = ${OPENSHIFT_GEAR_UUID}
+	heapLimit = ${OPENSHIFT_GEAR_MEMORY_MB}m
+	packedGitLimit = $((${OPENSHIFT_GEAR_MEMORY_MB}/4))m
 [sshd]
 	listenAddress = off
 [httpd]
