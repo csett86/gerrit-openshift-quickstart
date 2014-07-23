@@ -59,4 +59,5 @@ cat >${config_dir}gerrit.config <<EOF
 EOF
 
 # rerun init to initialize mysql database
-java -jar ${OPENSHIFT_DATA_DIR}gerrit.war init --batch --no-auto-start -d ${site_dir}
+java -jar ${OPENSHIFT_DATA_DIR}gerrit.war init --batch --no-auto-start --install-plugin download-commands -d ${site_dir}
+java -jar ${OPENSHIFT_DATA_DIR}gerrit.war reindex --recheck-mergeable -d ${site_dir}
