@@ -50,7 +50,6 @@ cat >${config_dir}gerrit.config <<EOF
 	user = ${OPENSHIFT_GEAR_UUID}
 	heapLimit = ${OPENSHIFT_GEAR_MEMORY_MB}m
 	packedGitLimit = $((${OPENSHIFT_GEAR_MEMORY_MB}/4))m
-	javaHome = $(dirname $(dirname $(readlink -f $(which java))))
 [sshd]
 	listenAddress = off
 [httpd]
