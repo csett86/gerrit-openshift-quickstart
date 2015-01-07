@@ -3,4 +3,7 @@
 # script. The application will work only if it binds to
 # $OPENSHIFT_DIY_IP:8080
 
+# replace the javaHome, path could be outdated after java update
+git config -f ${OPENSHIFT_DATA_DIR}site/etc/gerrit.config container.javaHome $(dirname $(dirname $(readlink -f $(which java))))
+
 ${OPENSHIFT_DATA_DIR}site/bin/gerrit.sh start
