@@ -2,7 +2,7 @@
 
 # To update the version shipped in this quickstart, bump this variable:
 #
-install_version="2.9.3"
+install_version="2.9.4"
 
 # Download and install Gerrit
 
